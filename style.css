@@ -8,7 +8,7 @@ body {
 
 #hud {
     position: absolute;
-    top: 10%;
+    top: 5%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
@@ -23,3 +23,14 @@ body {
     text-shadow: 0 0 10px cyan, 0 0 20px cyan;
 }
 
+#menuPanel {
+    margin-top: 10px;
+}
+#menuPanel button {
+    margin: 5px;
+    padding: 0.5em 1em;
+    background: cyan;
+    border: none;
+    cursor: pointer;
+    font-size: 1em;
+}
