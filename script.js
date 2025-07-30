@@ -3,10 +3,10 @@ let controller1, controller2;
 let torusColor = 0x00ffff;
 let orbPulse = 1;
 
-// Debug HUD element
+// Debug overlay
 const debugPanel = document.createElement('div');
 debugPanel.style.cssText = "position:absolute;bottom:10px;left:10px;color:lime;font-size:1em;background:rgba(0,0,0,0.5);padding:5px;border-radius:5px;z-index:999;";
-debugPanel.innerText = "VR: Not started";
+debugPanel.innerText = "VR: Waiting to start...";
 document.body.appendChild(debugPanel);
 
 function initScene() {
@@ -51,7 +51,7 @@ function initScene() {
     novaOrb.position.set(1, 1.5, -1);
     scene.add(novaOrb);
 
-    // Controllers (hand tracking)
+    // Controllers
     controller1 = renderer.xr.getController(0);
     controller2 = renderer.xr.getController(1);
     controller1.addEventListener('selectstart', onSelect);
@@ -72,7 +72,6 @@ function initScene() {
     document.getElementById("voiceStatus").innerText = "Voice placeholder active (say 'Hey Nova')";
 }
 
-// Grid texture
 function createGridTexture() {
     const size = 512;
     const canvas = document.createElement('canvas');
@@ -94,13 +93,12 @@ function createGridTexture() {
     return texture;
 }
 
-// Interaction
 function onSelect() {
     torusColor = Math.random() * 0xffffff;
     torus.material.color.setHex(torusColor);
 }
 
-// VR Button (with session delay)
+// VR Button
 const vrButton = document.createElement('button');
 vrButton.innerText = "Enter VR";
 vrButton.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:1em 2em;font-size:1.5em;z-index:999;";
@@ -110,14 +108,18 @@ vrButton.addEventListener('click', async () => {
     if (navigator.xr) {
         const supported = await navigator.xr.isSessionSupported('immersive-vr');
         if (supported) {
+            debugPanel.innerText = "VR: Starting session...";
             const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['hand-tracking'] });
-            setTimeout(() => {
-                renderer.xr.setSession(session);
-                debugPanel.innerText = "VR: Session started";
-            }, 500); // ensure scene is ready
+
+            // Build scene AFTER XR session starts
+            initScene();
+            renderer.xr.setSession(session);
+
+            debugPanel.innerText = "VR: Session started";
             vrButton.remove();
         } else {
             alert("VR not supported");
+            debugPanel.innerText = "VR: Not supported";
         }
     }
 });
@@ -130,8 +132,10 @@ if ('webkitSpeechRecognition' in window) {
         const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
         if (transcript.includes("hey nova")) {
             document.getElementById("voiceStatus").innerText = "Nova Activated (placeholder)";
-            novaOrb.material.emissiveIntensity = 3;
-            setTimeout(() => novaOrb.material.emissiveIntensity = 1, 1000);
+            if (novaOrb) {
+                novaOrb.material.emissiveIntensity = 3;
+                setTimeout(() => novaOrb.material.emissiveIntensity = 1, 1000);
+            }
         }
     };
     recognition.start();
@@ -143,5 +147,3 @@ document.addEventListener('click', (event) => {
     if (event.target.id === "musicButton") alert("Music Hub placeholder");
     if (event.target.id === "xpButton") alert("XP Stats placeholder");
 });
-
-initScene();
