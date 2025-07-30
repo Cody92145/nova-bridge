@@ -1,21 +1,25 @@
 body {
     margin: 0;
-    background: black;
-    color: cyan;
-    font-family: sans-serif;
-    text-align: center;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: #000;
+    color: #fff;
 }
-#hud {
+
+#loading {
     position: absolute;
-    width: 100%;
-    top: 40%;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.5em;
+    color: #0ff;
 }
-button {
-    padding: 1em 2em;
-    font-size: 1.2em;
-    background: cyan;
-    color: black;
-    border: none;
-    cursor: pointer;
-    margin-top: 20px;
+
+#nova-ui {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 5px;
 }
