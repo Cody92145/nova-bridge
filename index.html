@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nova Bridge XR</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <h1 id="loading">Loading Nova Bridge XR...</h1>
     <canvas id="xr-canvas"></canvas>
-
-    <div id="nova-ui">
-        <h2>Nova Interface</h2>
-        <button id="voiceButton">Activate Voice Input</button>
-        <div id="voiceStatus">Voice system not started</div>
+    <div id="hud">
+        <h1 class="glow">NOVA BRIDGE ONLINE</h1>
+        <div id="voiceStatus">Say "Hey Nova" to activate (placeholder)</div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
     <script src="script.js"></script>
 </body>
