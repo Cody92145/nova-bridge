@@ -3,20 +3,39 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Nova Bridge XR</title>
+    <title>Nova Command Center</title>
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
     <canvas id="xr-canvas"></canvas>
 
-    <div id="hud">
+    <!-- HUD -->
+    <div id="hud" class="fade-in">
         <h1 class="glow">NOVA BRIDGE ONLINE</h1>
         <div id="voiceStatus">Say "Hey Nova" to activate</div>
-        <div id="menuPanel">
-            <button id="marvelButton">Marvel Tracker</button>
-            <button id="musicButton">Music Hub</button>
-            <button id="xpButton">XP Stats</button>
-        </div>
+    </div>
+
+    <!-- Marvel Tracker -->
+    <div id="marvelPanel" class="panel slide-left">
+        <h2>Marvel Tracker</h2>
+        <ul id="marvelList"></ul>
+    </div>
+
+    <!-- Music Hub -->
+    <div id="musicPanel" class="panel slide-up">
+        <h2>Music Hub</h2>
+        <audio id="musicPlayer" controls>
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+        </audio>
+        <div id="currentTrack">Current: SoundHelix Demo</div>
+    </div>
+
+    <!-- XP Stats -->
+    <div id="xpPanel" class="panel slide-right">
+        <h2>XP Stats</h2>
+        <div class="xpBar"><span style="width:80%">Parenting XP: 80%</span></div>
+        <div class="xpBar"><span style="width:50%">HVAC XP: 50%</span></div>
+        <div class="xpBar"><span style="width:20%">Movie XP: 20%</span></div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/three@0.152.0/build/three.min.js"></script>
