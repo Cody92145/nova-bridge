@@ -1,6 +1,6 @@
-let scene, camera, renderer;
+let scene, camera, renderer, torus;
 
-function initXR(session) {
+function initScene() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
@@ -11,7 +11,7 @@ function initXR(session) {
 
     const geometry = new THREE.TorusKnotGeometry(0.3, 0.1, 100, 16);
     const material = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true });
-    const torus = new THREE.Mesh(geometry, material);
+    torus = new THREE.Mesh(geometry, material);
     scene.add(torus);
 
     renderer.setAnimationLoop(() => {
@@ -21,8 +21,9 @@ function initXR(session) {
     });
 
     document.getElementById("voiceStatus").innerText = "Voice placeholder active (say 'Hey Nova')";
-    renderer.xr.setSession(session);
 }
+
+initScene();
 
 // Add Enter VR button (Quest-safe)
 const vrButton = document.createElement('button');
@@ -35,7 +36,7 @@ vrButton.addEventListener('click', async () => {
         const supported = await navigator.xr.isSessionSupported('immersive-vr');
         if (supported) {
             const session = await navigator.xr.requestSession('immersive-vr');
-            initXR(session);
+            renderer.xr.setSession(session);
             vrButton.remove();
         } else {
             alert("VR not supported");
