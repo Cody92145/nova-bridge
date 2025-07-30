@@ -12,7 +12,16 @@ const marvelMovies = [
     "Avengers: Endgame"
 ];
 
+// Music Playlist
+const playlist = [
+    { name: "SoundHelix Demo 1", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+    { name: "SoundHelix Demo 2", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+    { name: "SoundHelix Demo 3", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" }
+];
+let currentTrackIndex = 0;
+
 function initHUD() {
+    // ---- Marvel Tracker ----
     const list = document.getElementById("marvelList");
     const saved = JSON.parse(localStorage.getItem("marvelProgress") || "[]");
 
@@ -31,6 +40,42 @@ function initHUD() {
 
         list.appendChild(li);
     });
+
+    // ---- Music Player Controls ----
+    const player = document.getElementById("musicPlayer");
+    const trackName = document.getElementById("currentTrack");
+    const prevBtn = document.getElementById("prevBtn");
+    const playBtn = document.getElementById("playBtn");
+    const nextBtn = document.getElementById("nextBtn");
+
+    function loadTrack(index) {
+        currentTrackIndex = index;
+        player.src = playlist[index].url;
+        trackName.innerText = "Current: " + playlist[index].name;
+        player.play();
+    }
+
+    prevBtn.addEventListener("click", () => {
+        let index = (currentTrackIndex - 1 + playlist.length) % playlist.length;
+        loadTrack(index);
+    });
+
+    nextBtn.addEventListener("click", () => {
+        let index = (currentTrackIndex + 1) % playlist.length;
+        loadTrack(index);
+    });
+
+    playBtn.addEventListener("click", () => {
+        if (player.paused) player.play(); else player.pause();
+    });
+
+    player.addEventListener("ended", () => {
+        let index = (currentTrackIndex + 1) % playlist.length;
+        loadTrack(index);
+    });
+
+    // Load first track by default
+    loadTrack(0);
 }
 
 initScene();
