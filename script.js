@@ -1,22 +1,23 @@
 let scene, camera, renderer, torus, floor, skybox, novaOrb;
-let controller1, controller2;
 let torusColor = 0x00ffff;
 let orbPulse = 1;
 
+// Debug overlay
 const debugPanel = document.createElement('div');
 debugPanel.style.cssText = "position:absolute;bottom:10px;left:10px;color:lime;font-size:1em;background:rgba(0,0,0,0.5);padding:5px;border-radius:5px;z-index:999;";
-debugPanel.innerText = "VR: Waiting";
+debugPanel.innerText = "Mode: Flat 3D (No VR)";
 document.body.appendChild(debugPanel);
 
-initScene(); // <-- Build scene BEFORE VR session
+initScene();
+animate();
 
 function initScene() {
     scene = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
+    camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 100);
+    camera.position.set(0, 1.5, 3);
 
     renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.xr.enabled = true;
     document.body.appendChild(renderer.domElement);
 
     // Torus
@@ -52,25 +53,7 @@ function initScene() {
     novaOrb.position.set(1, 1.5, -1);
     scene.add(novaOrb);
 
-    // Controllers
-    controller1 = renderer.xr.getController(0);
-    controller2 = renderer.xr.getController(1);
-    controller1.addEventListener('selectstart', onSelect);
-    controller2.addEventListener('selectstart', onSelect);
-    scene.add(controller1);
-    scene.add(controller2);
-
-    // Render Loop
-    renderer.setAnimationLoop(() => {
-        torus.rotation.x += 0.01;
-        torus.rotation.y += 0.01;
-        orbPulse += 0.05;
-        const scale = 1 + 0.05 * Math.sin(orbPulse);
-        novaOrb.scale.set(scale, scale, scale);
-        renderer.render(scene, camera);
-    });
-
-    document.getElementById("voiceStatus").innerText = "Voice placeholder active (say 'Hey Nova')";
+    window.addEventListener('resize', onWindowResize, false);
 }
 
 function createGridTexture() {
@@ -94,32 +77,21 @@ function createGridTexture() {
     return texture;
 }
 
-function onSelect() {
-    torusColor = Math.random() * 0xffffff;
-    torus.material.color.setHex(torusColor);
+function animate() {
+    requestAnimationFrame(animate);
+    torus.rotation.x += 0.01;
+    torus.rotation.y += 0.01;
+    orbPulse += 0.05;
+    const scale = 1 + 0.05 * Math.sin(orbPulse);
+    novaOrb.scale.set(scale, scale, scale);
+    renderer.render(scene, camera);
 }
 
-// VR Button
-const vrButton = document.createElement('button');
-vrButton.innerText = "Enter VR";
-vrButton.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:1em 2em;font-size:1.5em;z-index:999;";
-document.body.appendChild(vrButton);
-
-vrButton.addEventListener('click', async () => {
-    if (navigator.xr) {
-        const supported = await navigator.xr.isSessionSupported('immersive-vr');
-        if (supported) {
-            debugPanel.innerText = "VR: Starting session...";
-            const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['hand-tracking'] });
-            renderer.xr.setSession(session);
-            debugPanel.innerText = "VR: Session started!";
-            vrButton.remove();
-        } else {
-            alert("VR not supported");
-            debugPanel.innerText = "VR: Not supported";
-        }
-    }
-});
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+}
 
 // Voice placeholder
 if ('webkitSpeechRecognition' in window) {
@@ -129,16 +101,14 @@ if ('webkitSpeechRecognition' in window) {
         const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
         if (transcript.includes("hey nova")) {
             document.getElementById("voiceStatus").innerText = "Nova Activated (placeholder)";
-            if (novaOrb) {
-                novaOrb.material.emissiveIntensity = 3;
-                setTimeout(() => novaOrb.material.emissiveIntensity = 1, 1000);
-            }
+            novaOrb.material.emissiveIntensity = 3;
+            setTimeout(() => novaOrb.material.emissiveIntensity = 1, 1000);
         }
     };
     recognition.start();
 }
 
-// HUD Menu placeholders
+// HUD menu placeholders
 document.addEventListener('click', (event) => {
     if (event.target.id === "marvelButton") alert("Marvel Tracker placeholder");
     if (event.target.id === "musicButton") alert("Music Hub placeholder");
