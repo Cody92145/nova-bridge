@@ -6,13 +6,38 @@ body {
     color: cyan;
 }
 
+/* Animations */
+.fade-in { animation: fadeIn 1.2s ease-in forwards; opacity: 0; }
+.slide-left { animation: slideLeft 1.2s ease-out forwards; opacity: 0; }
+.slide-right { animation: slideRight 1.2s ease-out forwards; opacity: 0; }
+.slide-up { animation: slideUp 1.2s ease-out forwards; opacity: 0; }
+
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+@keyframes slideLeft { from {transform:translateX(-100%);} to {transform:translateX(0);} }
+@keyframes slideRight { from {transform:translateX(100%);} to {transform:translateX(0);} }
+@keyframes slideUp { from {transform:translateY(100%);} to {transform:translateY(0);} }
+
+/* Glow scan effect */
+.panel::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(120deg, transparent, rgba(0,255,255,0.2), transparent);
+    transform: rotate(25deg);
+    animation: scan 3s linear infinite;
+}
+@keyframes scan { from {transform: translateY(-100%) rotate(25deg);} to {transform: translateY(100%) rotate(25deg);} }
+
 #hud {
     position: absolute;
     top: 5%;
     left: 50%;
     transform: translateX(-50%);
     text-align: center;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0,0,0,0.5);
     padding: 1em 2em;
     border: 1px solid cyan;
     border-radius: 10px;
@@ -23,14 +48,42 @@ body {
     text-shadow: 0 0 10px cyan, 0 0 20px cyan;
 }
 
-#menuPanel {
-    margin-top: 10px;
+.panel {
+    position: absolute;
+    width: 300px;
+    background: rgba(0,0,0,0.7);
+    border: 1px solid cyan;
+    border-radius: 8px;
+    padding: 1em;
+    font-size: 0.9em;
+    color: white;
+    backdrop-filter: blur(5px);
+    overflow: hidden;
 }
-#menuPanel button {
-    margin: 5px;
-    padding: 0.5em 1em;
+
+#marvelPanel { top: 20%; left: 2%; }
+#musicPanel { bottom: 5%; left: 2%; }
+#xpPanel { top: 20%; right: 2%; }
+
+.panel h2 {
+    margin: 0 0 10px 0;
+    color: cyan;
+    text-shadow: 0 0 10px cyan;
+}
+
+.xpBar {
+    width: 100%;
+    background: #111;
+    margin: 5px 0;
+    border: 1px solid cyan;
+    border-radius: 5px;
+    overflow: hidden;
+}
+.xpBar span {
+    display: block;
+    height: 20px;
     background: cyan;
-    border: none;
-    cursor: pointer;
-    font-size: 1em;
+    text-align: center;
+    color: black;
+    font-weight: bold;
 }
