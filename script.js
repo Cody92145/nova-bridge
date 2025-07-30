@@ -1,7 +1,5 @@
 let scene, camera, renderer;
-let xrSession;
 
-// Basic WebXR Scene
 function initXR() {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
@@ -11,33 +9,43 @@ function initXR() {
     renderer.xr.enabled = true;
     document.body.appendChild(renderer.domElement);
 
-    const geometry = new THREE.BoxGeometry(0.2, 0.2, 0.2);
-    const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
-    const cube = new THREE.Mesh(geometry, material);
-    scene.add(cube);
+    const geometry = new THREE.TorusKnotGeometry(0.3, 0.1, 100, 16);
+    const material = new THREE.MeshBasicMaterial({ color: 0x00ffff, wireframe: true });
+    const torus = new THREE.Mesh(geometry, material);
+    scene.add(torus);
 
-    // Animate
     renderer.setAnimationLoop(() => {
-        cube.rotation.x += 0.01;
-        cube.rotation.y += 0.01;
+        torus.rotation.x += 0.01;
+        torus.rotation.y += 0.01;
         renderer.render(scene, camera);
     });
 
-    document.getElementById("loading").style.display = "none";
+    document.getElementById("voiceStatus").innerText = "Voice placeholder active (say 'Hey Nova')";
 }
 
-// Voice Input Placeholder
-document.getElementById("voiceButton").addEventListener("click", () => {
-    document.getElementById("voiceStatus").innerText = "Listening (placeholder)...";
-    // Future: Integrate Web Speech API or Nova voice engine
-});
-
-// Start WebXR
+// Auto start VR session
 if (navigator.xr) {
-    navigator.xr.requestSession("immersive-vr").then(session => {
-        xrSession = session;
-        renderer.xr.setSession(session);
+    navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+        if (supported) {
+            navigator.xr.requestSession('immersive-vr').then((session) => {
+                renderer.xr.setSession(session);
+            });
+        }
     });
 }
 
 initXR();
+
+// Placeholder voice input
+if ('webkitSpeechRecognition' in window) {
+    const recognition = new webkitSpeechRecognition();
+    recognition.continuous = true;
+    recognition.onresult = (event) => {
+        const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+        if (transcript.includes("hey nova")) {
+            document.getElementById("voiceStatus").innerText = "Nova Activated (placeholder)";
+        }
+    };
+    recognition.start();
+}
+
