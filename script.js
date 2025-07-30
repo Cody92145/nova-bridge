@@ -3,11 +3,12 @@ let controller1, controller2;
 let torusColor = 0x00ffff;
 let orbPulse = 1;
 
-// Debug overlay
 const debugPanel = document.createElement('div');
 debugPanel.style.cssText = "position:absolute;bottom:10px;left:10px;color:lime;font-size:1em;background:rgba(0,0,0,0.5);padding:5px;border-radius:5px;z-index:999;";
-debugPanel.innerText = "VR: Waiting to start...";
+debugPanel.innerText = "VR: Waiting";
 document.body.appendChild(debugPanel);
+
+initScene(); // <-- Build scene BEFORE VR session
 
 function initScene() {
     scene = new THREE.Scene();
@@ -38,13 +39,13 @@ function initScene() {
     light.position.set(0, 1, 0);
     scene.add(light);
 
-    // Grid skybox
+    // Skybox
     const skyGeo = new THREE.SphereGeometry(50, 32, 32);
     const skyMat = new THREE.MeshBasicMaterial({ map: createGridTexture(), side: THREE.BackSide });
     skybox = new THREE.Mesh(skyGeo, skyMat);
     scene.add(skybox);
 
-    // Nova orb avatar
+    // Nova Orb
     const orbGeo = new THREE.SphereGeometry(0.2, 32, 32);
     const orbMat = new THREE.MeshStandardMaterial({ emissive: 0x00ffff, emissiveIntensity: 1, color: 0x000000 });
     novaOrb = new THREE.Mesh(orbGeo, orbMat);
@@ -59,7 +60,7 @@ function initScene() {
     scene.add(controller1);
     scene.add(controller2);
 
-    // Render loop
+    // Render Loop
     renderer.setAnimationLoop(() => {
         torus.rotation.x += 0.01;
         torus.rotation.y += 0.01;
@@ -110,12 +111,8 @@ vrButton.addEventListener('click', async () => {
         if (supported) {
             debugPanel.innerText = "VR: Starting session...";
             const session = await navigator.xr.requestSession('immersive-vr', { optionalFeatures: ['hand-tracking'] });
-
-            // Build scene AFTER XR session starts
-            initScene();
             renderer.xr.setSession(session);
-
-            debugPanel.innerText = "VR: Session started";
+            debugPanel.innerText = "VR: Session started!";
             vrButton.remove();
         } else {
             alert("VR not supported");
@@ -141,7 +138,7 @@ if ('webkitSpeechRecognition' in window) {
     recognition.start();
 }
 
-// HUD menu placeholders
+// HUD Menu placeholders
 document.addEventListener('click', (event) => {
     if (event.target.id === "marvelButton") alert("Marvel Tracker placeholder");
     if (event.target.id === "musicButton") alert("Music Hub placeholder");
