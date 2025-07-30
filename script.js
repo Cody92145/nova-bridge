@@ -2,13 +2,39 @@ let scene, camera, renderer, torus, floor, skybox, novaOrb;
 let torusColor = 0x00ffff;
 let orbPulse = 1;
 
-// Debug overlay
-const debugPanel = document.createElement('div');
-debugPanel.style.cssText = "position:absolute;bottom:10px;left:10px;color:lime;font-size:1em;background:rgba(0,0,0,0.5);padding:5px;border-radius:5px;z-index:999;";
-debugPanel.innerText = "Mode: Flat 3D (No VR)";
-document.body.appendChild(debugPanel);
+// Marvel movie list with local save
+const marvelMovies = [
+    "Iron Man", "Incredible Hulk", "Iron Man 2", "Thor", "Captain America: The First Avenger",
+    "Avengers", "Iron Man 3", "Thor: The Dark World", "Captain America: Winter Soldier",
+    "Guardians of the Galaxy", "Avengers: Age of Ultron", "Ant-Man", "Captain America: Civil War",
+    "Doctor Strange", "Guardians Vol. 2", "Spider-Man: Homecoming", "Thor: Ragnarok",
+    "Black Panther", "Avengers: Infinity War", "Ant-Man and the Wasp", "Captain Marvel",
+    "Avengers: Endgame"
+];
+
+function initHUD() {
+    const list = document.getElementById("marvelList");
+    const saved = JSON.parse(localStorage.getItem("marvelProgress") || "[]");
+
+    marvelMovies.forEach(movie => {
+        const li = document.createElement("li");
+        li.textContent = movie;
+        if (saved.includes(movie)) li.style.textDecoration = "line-through";
+
+        li.addEventListener("click", () => {
+            li.style.textDecoration = li.style.textDecoration === "line-through" ? "none" : "line-through";
+            const newProgress = Array.from(list.children)
+                .filter(x => x.style.textDecoration === "line-through")
+                .map(x => x.textContent);
+            localStorage.setItem("marvelProgress", JSON.stringify(newProgress));
+        });
+
+        list.appendChild(li);
+    });
+}
 
 initScene();
+initHUD();
 animate();
 
 function initScene() {
@@ -40,13 +66,13 @@ function initScene() {
     light.position.set(0, 1, 0);
     scene.add(light);
 
-    // Skybox
+    // Grid skybox
     const skyGeo = new THREE.SphereGeometry(50, 32, 32);
     const skyMat = new THREE.MeshBasicMaterial({ map: createGridTexture(), side: THREE.BackSide });
     skybox = new THREE.Mesh(skyGeo, skyMat);
     scene.add(skybox);
 
-    // Nova Orb
+    // Nova orb
     const orbGeo = new THREE.SphereGeometry(0.2, 32, 32);
     const orbMat = new THREE.MeshStandardMaterial({ emissive: 0x00ffff, emissiveIntensity: 1, color: 0x000000 });
     novaOrb = new THREE.Mesh(orbGeo, orbMat);
@@ -93,24 +119,17 @@ function onWindowResize() {
     renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-// Voice placeholder
+// Voice input
 if ('webkitSpeechRecognition' in window) {
     const recognition = new webkitSpeechRecognition();
     recognition.continuous = true;
     recognition.onresult = (event) => {
         const transcript = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
         if (transcript.includes("hey nova")) {
-            document.getElementById("voiceStatus").innerText = "Nova Activated (placeholder)";
+            document.getElementById("voiceStatus").innerText = "Nova Activated!";
             novaOrb.material.emissiveIntensity = 3;
             setTimeout(() => novaOrb.material.emissiveIntensity = 1, 1000);
         }
     };
     recognition.start();
 }
-
-// HUD menu placeholders
-document.addEventListener('click', (event) => {
-    if (event.target.id === "marvelButton") alert("Marvel Tracker placeholder");
-    if (event.target.id === "musicButton") alert("Music Hub placeholder");
-    if (event.target.id === "xpButton") alert("XP Stats placeholder");
-});
