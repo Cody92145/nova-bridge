@@ -1,0 +1,21 @@
+body {
+    margin: 0;
+    background: black;
+    color: cyan;
+    font-family: sans-serif;
+    text-align: center;
+}
+#hud {
+    position: absolute;
+    width: 100%;
+    top: 40%;
+}
+button {
+    padding: 1em 2em;
+    font-size: 1.2em;
+    background: cyan;
+    color: black;
+    border: none;
+    cursor: pointer;
+    margin-top: 20px;
+}
