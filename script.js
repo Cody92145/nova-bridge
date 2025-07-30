@@ -1,6 +1,6 @@
 let scene, camera, renderer;
 
-function initXR() {
+function initXR(session) {
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 20);
 
@@ -21,22 +21,29 @@ function initXR() {
     });
 
     document.getElementById("voiceStatus").innerText = "Voice placeholder active (say 'Hey Nova')";
+    renderer.xr.setSession(session);
 }
 
-// Auto start VR session
-if (navigator.xr) {
-    navigator.xr.isSessionSupported('immersive-vr').then((supported) => {
+// Add Enter VR button (Quest-safe)
+const vrButton = document.createElement('button');
+vrButton.innerText = "Enter VR";
+vrButton.style.cssText = "position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);padding:1em 2em;font-size:1.5em;z-index:999;";
+document.body.appendChild(vrButton);
+
+vrButton.addEventListener('click', async () => {
+    if (navigator.xr) {
+        const supported = await navigator.xr.isSessionSupported('immersive-vr');
         if (supported) {
-            navigator.xr.requestSession('immersive-vr').then((session) => {
-                renderer.xr.setSession(session);
-            });
+            const session = await navigator.xr.requestSession('immersive-vr');
+            initXR(session);
+            vrButton.remove();
+        } else {
+            alert("VR not supported");
         }
-    });
-}
+    }
+});
 
-initXR();
-
-// Placeholder voice input
+// Voice input placeholder
 if ('webkitSpeechRecognition' in window) {
     const recognition = new webkitSpeechRecognition();
     recognition.continuous = true;
@@ -48,4 +55,3 @@ if ('webkitSpeechRecognition' in window) {
     };
     recognition.start();
 }
-
