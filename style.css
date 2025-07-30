@@ -87,3 +87,21 @@ body {
     color: black;
     font-weight: bold;
 }
+
+/* Music Controls */
+.musicControls {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+button {
+    background: cyan;
+    border: none;
+    color: black;
+    font-weight: bold;
+    padding: 5px 10px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.2s ease;
+}
+button:hover { background: white; }
